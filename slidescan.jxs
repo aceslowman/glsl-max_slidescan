@@ -3,12 +3,14 @@
 	Voronoi
 	</description>
 	<param name="time" type="float" default="0.0" />
-	<param name="bands" type="float" default="7." />
-	<param name="rollRate" type="float" default="0.5" />
-	<param name="rollAmount" type="float" default="7." />	
+	<param name="warp" type="float" default="0.005" />
+	<param name="bands" type="float" default="55." />
+	<param name="rollRate" type="float" default="2.5" />
+	<param name="rollAmount" type="float" default=".15" />	
 	<language name="glsl" version="2.1">
 		<bind param="time" program="fp" />
 		<bind param="bands" program="fp" />
+		<bind param="warp" program="fp" />
 		<bind param="rollRate" program="fp" />
 		<bind param="rollAmount" program="fp" />
 		<program name="vp" type="vertex" source="sh.passthrudim.vp.glsl" />
@@ -22,6 +24,7 @@ varying vec2 texcoord0;
 varying vec2 texdim0;
 
 uniform float time;
+uniform float warp;
 uniform float bands;
 uniform float rollRate;
 uniform float rollAmount;
@@ -38,17 +41,24 @@ void main()
 		// uv.x -= mod(uv.x, 1.0 / bands)*0.999;		
 	// (multiplying or dividing the modulus will distort each individual x pos)
 	
-	uv.x -= mod(uv.x, 1.0 / bands)*0.9995;
+	uv.x -= mod(uv.x, 1.0 / bands)*(1. - warp);
 	
 	// modulate the y axis
 	// mod(position * modulating_roll,1.0)
 	// I think 1.0 at the end actually allows it to wrap properly. yep.
 	// trying manipulating x or y
-	uv.x = mod(uv.y + rollAmount * sin(rollRate * time * uv.x), 1.0);		
-	
+	uv.x = mod(uv.y + rollAmount * sin(rollRate * time * uv.x/2.), 1.0);		
+	//uv.x = mod(uv.y + rollAmount * sin(rollRate * time), 1.0);	//SOLID ZOOMY	
 	// get the color (and convert coords BACK from uv)
 	vec4 color = texture2DRect(tex0, uv*texdim0);
-	gl_FragColor = color;
+	
+	if(texcoord0.x > (texdim0.x/2)){
+		vec2 pos = texcoord0;
+		pos.x -= texdim0/2.;
+		gl_FragColor = texture2DRect(tex0, pos);
+	}else{
+		gl_FragColor = color;
+	}
 }
 
 ]]>
