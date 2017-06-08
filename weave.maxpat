@@ -991,9 +991,9 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 71.0, 209.22876, 205.0, 22.0 ],
+					"patching_rect" : [ 71.0, 211.144531, 190.0, 22.0 ],
 					"style" : "",
-					"text" : "jit.gl.slab mainout @file slidescan.jxs"
+					"text" : "jit.gl.slab mainout @file weave.jxs"
 				}
 
 			}
